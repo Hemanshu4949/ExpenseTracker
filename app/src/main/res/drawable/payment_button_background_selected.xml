@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- The main background color for the selected button -->
+    <solid android:color="@color/add_expense_accent_blue" />
+    <corners android:radius="8dp" />
+    <!-- The stroke that creates the glow effect -->
+    <stroke
+        android:width="2dp"
+        android:color="#99FFFFFF" /> <!-- A semi-transparent white for a soft glow -->
+</shape>

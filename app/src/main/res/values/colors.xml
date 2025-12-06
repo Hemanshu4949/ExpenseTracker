@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tailwind-inspired colors -->
+    <color name="primary">#13a4ec</color>
+    <color name="background_light">#f6f7f8</color>
+    <color name="background_dark">#101c22</color>
+
+    <color name="text_light">#101c22</color>
+    <color name="text_dark">#090909</color>
+
+    <color name="text_muted_light">#6b7280</color>
+    <color name="text_muted_dark">#9ca3af</color>
+
+    <!-- helper: slightly transparent primary for outlined login button background -->
+    <color name="transparent_primary_bg">#3313A4EC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primary_light">#D0E7FA</color>
+    <color name="text_gray">#6B7280</color>
+    <color name="card_stroke">#E5E7EB</color>  <!-- light gray border for cards -->
+    <color name="error">#EF4444</color>        <!-- red color for delete icon -->
+
+    <color name="green">#10B981</color>
+
+    <color name="colorBackground">#0D1117</color>
+    <color name="colorSurface">#12161C</color>
+    <color name="colorCard">#1A1F25</color>
+
+    <!-- Text -->
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#9CA3AF</color>
+
+    <!-- Accent (Blue highlight) -->
+    <color name="colorAccent">#1E9BFF</color>
+    <color name="colorAccentLight">#3BA6FF</color>
+
+    <!-- Divider / muted -->
+    <color name="colorDivider">#2A2F36</color>
+
+    <color name="summary_dark_background">#1C1C23</color>
+    <color name="summary_card_background">#272732</color>
+    <color name="summary_button_background">#363646</color>
+    <color name="summary_text_grey">#9E9E9E</color>
+    <color name="summary_accent_green">#4CAF50</color>
+    <color name="summary_accent_blue">#2196F3</color>
+    <color name="summary_category_food">#FFA726</color>
+
+    <color name="summary_aura_blue">#80D8FF</color>
+
+
+    <!-- Add Expense Screen Colors -->
+    <color name="add_expense_dark_background">#1C1C23</color>
+    <color name="add_expense_field_background">#272732</color>
+    <color name="add_expense_accent_blue">#00A3FF</color>
+    <color name="add_expense_text_light">#FFFFFF</color>
+    <color name="add_expense_text_medium">#A0A0A0</color>
+    <color name="add_expense_button_unselected_background">#363646</color>
+    <color name="red">#F80505</color>
+</resources>

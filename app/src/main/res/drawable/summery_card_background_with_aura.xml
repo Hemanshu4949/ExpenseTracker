@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This drawable uses a layer-list to create a complex gradient aura effect.
+  - The gradientRadius has been increased to ensure the fade covers the entire area smoothly.
+  - The gradients fade from a bright blue to the screen's actual background color.
+  - The inset on the final solid card has been reduced to make the visible aura thinner.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Top-Left Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <gradient
+                android:centerX="0"
+                android:centerY="0"
+                android:endColor="@color/summary_dark_background"
+                android:gradientRadius="600dp"
+                android:startColor="@color/summary_aura_blue"
+                android:type="radial" />
+        </shape>
+    </item>
+
+    <!-- Top-Right Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <gradient
+                android:centerX="1"
+                android:centerY="0"
+                android:endColor="@color/summary_dark_background"
+                android:gradientRadius="600dp"
+                android:startColor="@color/summary_aura_blue"
+                android:type="radial" />
+        </shape>
+    </item>
+
+    <!-- Bottom-Left Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <gradient
+                android:centerX="0"
+                android:centerY="1"
+                android:endColor="@color/summary_dark_background"
+                android:gradientRadius="600dp"
+                android:startColor="@color/summary_aura_blue"
+                android:type="radial" />
+        </shape>
+    </item>
+
+    <!-- Bottom-Right Gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <gradient
+                android:centerX="1"
+                android:centerY="1"
+                android:endColor="@color/summary_dark_background"
+                android:gradientRadius="600dp"
+                android:startColor="@color/summary_aura_blue"
+                android:type="radial" />
+        </shape>
+    </item>
+
+    <!-- The Solid Card on Top (to mask the gradient centers) -->
+    <item
+        android:bottom="2dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:top="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/summary_card_background" />
+            <corners android:radius="18dp" />
+        </shape>
+    </item>
+
+</layer-list>
+
