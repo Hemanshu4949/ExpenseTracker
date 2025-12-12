@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="75dp"
     android:background="@color/add_expense_dark_background"
     android:padding="20dp"
-    tools:context=".Setting.setting">
+    tools:context=".Setting.setting"
+    >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <!-- Header -->
     <TextView
@@ -51,7 +57,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="32dp">
+            android:padding="15dp">
 
             <!-- Circular Profile Image Container -->
             <androidx.cardview.widget.CardView
@@ -197,6 +203,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:id="@+id/add_friend"
                 android:src="@drawable/ic_arrow_upward"
                 app:tint="@color/summary_text_grey" />
         </LinearLayout>
@@ -227,6 +234,18 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
+            <TextView
+                android:id="@+id/Norequest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="* No Friend Requests"
+                android:textColor="@color/red"
+                android:textSize="16sp"
+                android:visibility="visible" />
             <!-- RecyclerView for requests -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_friend_requests"
@@ -245,6 +264,7 @@
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        android:layout_marginTop="142dp"
         android:backgroundTint="@color/summary_card_background"
         android:fontFamily="@font/poppins_bold"
         android:text="LogOut"
@@ -256,7 +276,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_email"
+        app:layout_constraintTop_toBottomOf="@+id/card_friend_requests"
         app:layout_constraintVertical_bias="0.688" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

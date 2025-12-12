@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         {
             Log.d("Credentials_name" , user.toString());
             Intent intent = new Intent(MainActivity.this , home.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 

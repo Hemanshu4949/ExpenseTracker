@@ -264,7 +264,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/summary"
+                android:src="@drawable/ic_receipt"
                 app:tint="@color/add_expense_text_medium" />
 
             <TextView
@@ -289,8 +289,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_marginTop="12dp">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupSelectedFriend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible" />
 
             <!-- Search Bar for Users -->
             <EditText

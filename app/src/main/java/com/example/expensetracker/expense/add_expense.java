@@ -3,7 +3,9 @@ package com.example.expensetracker.expense;
 import android.app.DatePickerDialog;
 
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +22,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.expensetracker.Adapter.ChipGroupHelper;
+import com.example.expensetracker.Adapter.UserSearchAdapter;
 import com.example.expensetracker.CategorySelectionBottomSheet;
 import com.example.expensetracker.Model.Expense;
+import com.example.expensetracker.Model.User;
 import com.example.expensetracker.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -32,12 +39,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class add_expense extends Fragment implements CategorySelectionBottomSheet.CategorySelectionListener {
@@ -49,9 +60,22 @@ public class add_expense extends Fragment implements CategorySelectionBottomShee
     private Button selectedPaymentMethod;
     ImageView datepick_icon , type_icon;
     private SwitchMaterial typeswitch ;
+    SwitchMaterial switchSplit ;
+    LinearLayout splitDetailsContainer ;
+    private RecyclerView rvSplitSearchResults;
+    private EditText etSearchFriend;
+
+
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore firestore;
     private DatabaseReference mDatabase;
+
+
+    // --- for splitwise feature ---
+    private User selectedFriendForSplit = null;
+    private List<User> selectedFriendsForSplit = new ArrayList<>();
+
 
 
     private final Calendar myCalendar = Calendar.getInstance();
@@ -76,8 +100,8 @@ public class add_expense extends Fragment implements CategorySelectionBottomShee
         categoryContainer = view.findViewById(R.id.categoryContainer);
         typeswitch = view.findViewById(R.id.typeswitch);
         tvCategory = view.findViewById(R.id.tvCategory); // You need to add this ID to your TextView inside categoryContainer
-        SwitchMaterial switchSplit = view.findViewById(R.id.switchSplit);
-        LinearLayout splitDetailsContainer = view.findViewById(R.id.splitDetailsContainer);
+        switchSplit = view.findViewById(R.id.switchSplit);
+        splitDetailsContainer = view.findViewById(R.id.splitDetailsContainer);
 
         type_icon  = view.findViewById(R.id.type_icon);
         btnCash = view.findViewById(R.id.btnCash);
@@ -86,14 +110,7 @@ public class add_expense extends Fragment implements CategorySelectionBottomShee
         btnOnline = view.findViewById(R.id.btnOnline);
 
 
-        switchSplit.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                splitDetailsContainer.setVisibility(View.VISIBLE);
-                // Optional: Load user list here if not already loaded
-            } else {
-                splitDetailsContainer.setVisibility(View.GONE);
-            }
-        });
+
 
 
         // Setup Listeners
@@ -103,8 +120,120 @@ public class add_expense extends Fragment implements CategorySelectionBottomShee
         setupPaymentMethodSelection();
         setupAddExpenseButton(view);
         setupCloseButton(view);
+
     }
 
+
+    // --- methods for splitwise ---
+
+    private void setupSplitWiseFeature() {
+        // Toggle Visibility
+        switchSplit.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                splitDetailsContainer.setVisibility(View.VISIBLE);
+            } else {
+                splitDetailsContainer.setVisibility(View.GONE);
+                // Clear selection if disabled
+                selectedFriendsForSplit.clear();
+                refreshSelectedChips();
+            }
+        });
+
+        // Search Setup
+        rvSplitSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
+        List<User> searchResults = new ArrayList<>();
+
+        // Adapter logic: When "Add" is clicked in the list
+        UserSearchAdapter searchAdapter = new UserSearchAdapter(searchResults, (UserSearchAdapter.OnUserSelectedListener) this::addFriendToSplit);
+        rvSplitSearchResults.setAdapter(searchAdapter);
+
+        etSearchFriend.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                if (query.length() > 2) {
+                    performSearch(query, searchResults, searchAdapter);
+                } else {
+                    searchResults.clear();
+                    searchAdapter.notifyDataSetChanged();
+                    rvSplitSearchResults.setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void addFriendToSplit(User user) {
+        // Prevent adding the same user twice
+        for (User selected : selectedFriendsForSplit) {
+            if (selected.getUid().equals(user.getUid())) {
+                Toast.makeText(getContext(), "User already added", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        selectedFriendsForSplit.add(user);
+        refreshSelectedChips();
+
+        // Clear search to allow adding another
+        etSearchFriend.setText("");
+        rvSplitSearchResults.setVisibility(View.GONE);
+    }
+
+    private void refreshSelectedChips() {
+        // Use the ChipGroupHelper to redraw chips
+        ChipGroupHelper.refreshChips(getContext(), chipGroupSelectedFriend, selectedFriendsForSplit, userToRemove -> {
+            selectedFriendsForSplit.remove(userToRemove);
+            refreshSelectedChips(); // Recursive update to remove the chip view
+        });
+    }
+
+    private void performSearch(String emailQuery, List<User> results, UserSearchAdapter adapter) {
+        firestore.collection("users")
+                .whereGreaterThanOrEqualTo("email", emailQuery)
+                .whereLessThan("email", emailQuery + "\uf8ff")
+                .limit(5)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    results.clear();
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String currentUid = mAuth.getUid();
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            String docId = doc.getId();
+
+                            // 1. Don't show current user
+                            if (currentUid != null && docId.equals(currentUid)) continue;
+
+                            // 2. Don't show users already selected
+                            boolean alreadySelected = false;
+                            for (User u : selectedFriendsForSplit) {
+                                if (u.getUid().equals(docId)) {
+                                    alreadySelected = true;
+                                    break;
+                                }
+                            }
+                            if (alreadySelected) continue;
+
+                            String name = doc.getString("name");
+                            String email = doc.getString("email");
+                            results.add(new User(docId, name, email));
+                        }
+                    }
+
+                    if (!results.isEmpty()) {
+                        rvSplitSearchResults.setVisibility(View.VISIBLE);
+                    } else {
+                        rvSplitSearchResults.setVisibility(View.GONE);
+                    }
+                    adapter.notifyDataSetChanged();
+                });
+    }
+
+    // --- mthods for other functions ---
     private void setupCloseButton(View view) {
         view.findViewById(R.id.btnClose).setOnClickListener(v -> {
             if (getParentFragmentManager() != null) {
