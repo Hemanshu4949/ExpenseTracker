@@ -15,30 +15,18 @@ import java.util.List;
 public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.ViewHolder> {
 
     private final List<User> userList;
-    private final OnAddClickListener listener;
-    private final OnUserSelectedListener selected;
+    private final OnUserActionListener listener;
+    private final boolean isSelectionMode; // true for Split selection (Select), false for Add Friend (Add)
 
-    public interface OnUserSelectedListener {
-        void onUserSelected(User user);
+    public interface OnUserActionListener {
+        void onAction(User user);
     }
 
-    public interface OnAddClickListener {
-        void onAddClick(User user);
-    }
-
-    public UserSearchAdapter(List<User> userList, OnAddClickListener listener) {
+    // Constructor with mode flag
+    public UserSearchAdapter(List<User> userList, boolean isSelectionMode, OnUserActionListener listener) {
         this.userList = userList;
+        this.isSelectionMode = isSelectionMode;
         this.listener = listener;
-
-    }
-    public UserSearchAdapter(List<User> userList, OnAddClickListener listener, OnUserSelectedListener selected) {
-        this.userList = userList;
-        this.listener = listener;
-        this.selected = selected;
-    }
-    public UserSearchAdapter(List<User> userList, OnUserSelectedListener selected) {
-        this.userList = userList;
-        this.selected = selected;
     }
 
     @NonNull
@@ -54,7 +42,22 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
         holder.tvName.setText(user.getName());
         holder.tvEmail.setText(user.getEmail());
 
-        holder.btnAdd.setOnClickListener(v -> listener.onAddClick(user));
+        // Custom button text based on mode
+        if (isSelectionMode) {
+            holder.btnAction.setText("Select");
+        } else {
+            holder.btnAction.setText("Add");
+        }
+
+        // Click on the whole item OR the button triggers the action
+        View.OnClickListener clickListener = v -> listener.onAction(user);
+
+        // Optional: If in selection mode, clicking the whole row feels more natural
+        if (isSelectionMode) {
+            holder.itemView.setOnClickListener(clickListener);
+        }
+
+        holder.btnAction.setOnClickListener(clickListener);
     }
 
     @Override
@@ -64,13 +67,14 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Vi
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvEmail;
-        MaterialButton btnAdd;
+        MaterialButton btnAction;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvUserName);
             tvEmail = itemView.findViewById(R.id.tvUserEmail);
-            btnAdd = itemView.findViewById(R.id.btnAdd);
+            // Ensure this ID (btnAdd) matches your list_item_user_search.xml layout
+            btnAction = itemView.findViewById(R.id.btnAdd);
         }
     }
 }

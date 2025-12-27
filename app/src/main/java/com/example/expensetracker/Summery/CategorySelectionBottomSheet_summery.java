@@ -19,13 +19,13 @@ import java.util.List;
 
 public class CategorySelectionBottomSheet_summery extends BottomSheetDialogFragment {
 
-    private CategorySelectionBottomSheet_summery.CategorySelectionListener_summery mListener;
+    private CategorySelectionListener_summery mListener;
 
     public interface CategorySelectionListener_summery{
         void onCategorySelected_summery(String categoryName);
     }
 
-    public void setCategorySelectionListener_summery(CategorySelectionBottomSheet_summery.CategorySelectionListener_summery listener) {
+    public void setCategorySelectionListener_summery(CategorySelectionListener_summery listener) {
         mListener = listener;
     }
 

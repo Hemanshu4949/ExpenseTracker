@@ -202,7 +202,7 @@ public class setting extends Fragment {
         List<User> searchResults = new ArrayList<>();
 
         // Create the adapter with a click listener for the "Add" button on each user item
-        UserSearchAdapter searchAdapter = new UserSearchAdapter(searchResults, user -> {
+        UserSearchAdapter searchAdapter = new UserSearchAdapter(searchResults,false ,user -> {
             // Logic when "Add" is clicked for a specific user
             sendFriendRequest(user);
         });
